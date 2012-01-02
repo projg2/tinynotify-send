@@ -56,6 +56,14 @@ Send notification on the local session bus. This is the default in
 Notification expiration timeout (in ms). If not specified, server-defined
 default will be used. If \fI0\fR, notification does not expire.
 
+.IP "\fB\-T\fR, \fB\-\-timeout\fR TIME"
+
+Program run timeout (in ms). If not specified, defaults to expire-timeout
+or 120s.
+
+After that time, program will exit even if server doesn't signal
+the notification being closed.
+
 .IP "\fB\-u\fR, \fB\-\-urgency\fR LEVEL"
 
 Urgency level for the notification (0 \- low, 1 \- normal, 2 \- critical).
