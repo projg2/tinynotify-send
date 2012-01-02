@@ -1,5 +1,5 @@
 /* libtinynotify
- * (c) 2011 Michał Górny
+ * (c) 2011-2012 Michał Górny
  * 2-clause BSD-licensed
  */
 
