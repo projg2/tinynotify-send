@@ -33,7 +33,7 @@
  * A type describing a set of additional notification flags as returned
  * by notification_new_from_cmdline().
  */
-typedef const char* NotifyCLIFlags;
+typedef struct _notify_cli_flags* NotifyCLIFlags;
 
 /**
  * notify_cli_flags_get_systemwide

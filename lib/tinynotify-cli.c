@@ -16,20 +16,25 @@
 #	include <getopt.h>
 #endif
 
+struct _notify_cli_flags {
+	char range; /* l[ocal]/[system]w[ide] */
+	char ground; /* f[oreground]/b[ackground] */
+};
+
 int notify_cli_flags_get_systemwide(NotifyCLIFlags f) {
-	return f[0] == 'w';
+	return f->range == 'w';
 }
 
 int notify_cli_flags_get_local(NotifyCLIFlags f) {
-	return f[0] == 'l';
+	return f->range == 'l';
 }
 
 int notify_cli_flags_get_foreground(NotifyCLIFlags f) {
-	return f[1] == 'f';
+	return f->ground == 'f';
 }
 
 int notify_cli_flags_get_background(NotifyCLIFlags f) {
-	return f[1] == 'b';
+	return f->ground == 'b';
 }
 
 static void _handle_version(const char *version_str) {
@@ -130,7 +135,7 @@ static void _action_cb(Notification n, const char *key, void *data) {
 Notification notification_new_from_cmdline(int argc, char *argv[],
 		const char *version_str, NotifyCLIFlags *flags) {
 	int arg;
-	static char flagbuf[3] = "  ";
+	static struct _notify_cli_flags flagbuf = { 0 };
 
 	Notification n = notification_new_unformatted("", NOTIFICATION_NO_BODY);
 
@@ -165,21 +170,21 @@ Notification notification_new_from_cmdline(int argc, char *argv[],
 					if (sep)
 						free(tmp);
 				}
-				if (flagbuf[1] != 'f')
-					flagbuf[1] = 'b';
+				if (flagbuf.ground != 'f')
+					flagbuf.ground = 'b';
 				break;
 #endif
 			case 'c':
 				notification_set_category(n, optarg);
 				break;
 			case 'f':
-				flagbuf[1] = 'f';
+				flagbuf.ground = 'f';
 				break;
 			case 'i':
 				notification_set_app_icon(n, optarg);
 				break;
 			case 'l':
-				flagbuf[0] = 'l';
+				flagbuf.range = 'l';
 				break;
 			case 't':
 				/* XXX: strtol()? */
@@ -190,7 +195,7 @@ Notification notification_new_from_cmdline(int argc, char *argv[],
 				notification_set_urgency(n, atoi(optarg));
 				break;
 			case 'w':
-				flagbuf[0] = 'w';
+				flagbuf.range = 'w';
 				break;
 			case 'V':
 				_handle_version(version_str);
@@ -218,6 +223,6 @@ Notification notification_new_from_cmdline(int argc, char *argv[],
 		return NULL;
 	}
 
-	*flags = flagbuf;
+	*flags = &flagbuf;
 	return n;
 }
