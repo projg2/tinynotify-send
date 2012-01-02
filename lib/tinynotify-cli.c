@@ -19,7 +19,7 @@
 struct _notify_cli_flags {
 	char range; /* l[ocal]/[system]w[ide] */
 	char ground; /* f[oreground]/b[ackground] */
-	int timeout; /* [ms] or 0 for off */
+	int timeout; /* [ms] */
 };
 
 int notify_cli_flags_get_systemwide(NotifyCLIFlags f) {
@@ -143,7 +143,7 @@ Notification notification_new_from_cmdline(int argc, char *argv[],
 		const char *version_str, NotifyCLIFlags *flags) {
 	int arg;
 	static struct _notify_cli_flags flagbuf = { 0 };
-	int default_timeout = 30000; /* 30s */
+	int default_timeout = 120000; /* 120s */
 
 	Notification n = notification_new_unformatted("", NOTIFICATION_NO_BODY);
 
