@@ -83,6 +83,16 @@ int notify_cli_flags_get_foreground(NotifyCLIFlags flags);
 int notify_cli_flags_get_background(NotifyCLIFlags flags);
 
 /**
+ * notify_cli_flags_get_timeout
+ * @flags: flags returned by notification_new_from_cmdline()
+ *
+ * Get the expected timeout for program run.
+ *
+ * Returns: the timeout, in milliseconds
+ */
+int notify_cli_flags_get_timeout(NotifyCLIFlags flags);
+
+/**
  * notification_new_from_cmdline
  * @argc: command-line argument count
  * @argv: command-line argument values

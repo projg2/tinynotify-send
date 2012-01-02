@@ -19,6 +19,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#ifdef LIBTINYNOTIFY_HAS_EVENT_API
+#	include <time.h>
+#endif
+
 #ifdef HAVE_WORKING_FORK
 #	include <unistd.h>
 #endif
@@ -90,7 +94,18 @@ int main(int argc, char *argv[]) {
 			disp = notify_cli_flags_get_foreground(fl);
 
 		if (disp) {
-			while (!notify_session_dispatch(s, NOTIFY_SESSION_NO_TIMEOUT));
+			int timeout = notify_cli_flags_get_timeout(fl);
+			time_t max_time = time(NULL) + timeout;
+			time_t curr_time;
+
+			while (time(&curr_time) < max_time) {
+				if (notify_session_dispatch(s, max_time - curr_time))
+					break;
+			}
+
+			/* Reap it. */
+			if (curr_time >= max_time)
+				notification_close(n, s);
 		}
 	}
 #endif

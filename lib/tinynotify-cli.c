@@ -19,6 +19,7 @@
 struct _notify_cli_flags {
 	char range; /* l[ocal]/[system]w[ide] */
 	char ground; /* f[oreground]/b[ackground] */
+	int timeout; /* [ms] or 0 for off */
 };
 
 int notify_cli_flags_get_systemwide(NotifyCLIFlags f) {
@@ -35,6 +36,10 @@ int notify_cli_flags_get_foreground(NotifyCLIFlags f) {
 
 int notify_cli_flags_get_background(NotifyCLIFlags f) {
 	return f->ground == 'b';
+}
+
+int notify_cli_flags_get_timeout(NotifyCLIFlags f) {
+	return f->timeout;
 }
 
 static void _handle_version(const char *version_str) {
@@ -55,6 +60,7 @@ static const char* const _option_descs[] = {
 	" ICON", "application icon (name or path)",
 	NULL, "send notification on the local session bus",
 	" TIME", "expiration timeout (in ms)",
+	" TIME", "program timeout (in ms, def to expire or 30s)",
 	" LEVEL", "urgency level (0 - low, 1 - normal, 2 - critical)",
 	NULL, "send notification system-wide (to all session buses)",
 	NULL, "show help message",
@@ -69,7 +75,7 @@ static const char* const _getopt_optstring =
 #ifdef LIBTINYNOTIFY_HAS_EVENT_API
 		"f"
 #endif
-		"i:lt:u:w?V";
+		"i:lt:T:u:w?V";
 
 #ifdef HAVE_GETOPT_LONG
 static const struct option _getopt_longopts[] = {
@@ -84,6 +90,7 @@ static const struct option _getopt_longopts[] = {
 	{ "icon", required_argument, NULL, 'i' },
 	{ "local", no_argument, NULL, 'l' },
 	{ "expire-time", required_argument, NULL, 't' },
+	{ "timeout", required_argument, NULL, 'T' },
 	{ "urgency", required_argument, NULL, 'u' },
 	{ "system-wide", no_argument, NULL, 'w' },
 
@@ -136,6 +143,7 @@ Notification notification_new_from_cmdline(int argc, char *argv[],
 		const char *version_str, NotifyCLIFlags *flags) {
 	int arg;
 	static struct _notify_cli_flags flagbuf = { 0 };
+	int default_timeout = 30000; /* 30s */
 
 	Notification n = notification_new_unformatted("", NOTIFICATION_NO_BODY);
 
@@ -188,7 +196,12 @@ Notification notification_new_from_cmdline(int argc, char *argv[],
 				break;
 			case 't':
 				/* XXX: strtol()? */
-				notification_set_expire_timeout(n, atoi(optarg));
+				default_timeout = atoi(optarg);
+				notification_set_expire_timeout(n, default_timeout);
+				break;
+			case 'T':
+				/* XXX: strtol()? */
+				flagbuf.timeout = atoi(optarg);
 				break;
 			case 'u':
 				/* XXX: strtol()? */
@@ -222,6 +235,9 @@ Notification notification_new_from_cmdline(int argc, char *argv[],
 		notification_free(n);
 		return NULL;
 	}
+
+	if (!flagbuf.timeout)
+		flagbuf.timeout = default_timeout;
 
 	*flags = &flagbuf;
 	return n;
