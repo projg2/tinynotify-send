@@ -95,11 +95,12 @@ int main(int argc, char *argv[]) {
 
 		if (disp) {
 			int timeout = notify_cli_flags_get_timeout(fl);
-			time_t max_time = time(NULL) + timeout;
+			time_t max_time = time(NULL) + timeout/1000;
 			time_t curr_time;
 
 			while (time(&curr_time) < max_time) {
-				if (notify_session_dispatch(s, max_time - curr_time))
+				if (notify_session_dispatch(s, (max_time - curr_time)*1000
+							+ timeout%1000))
 					break;
 			}
 
