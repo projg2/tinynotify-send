@@ -60,7 +60,7 @@ static const char* const _option_descs[] = {
 	" ICON", "application icon (name or path)",
 	NULL, "send notification on the local session bus",
 	" TIME", "expiration timeout (in ms)",
-	" TIME", "program timeout (in ms, def to expire or 30s)",
+	" TIME", "program timeout (in ms, def to expire or 120s)",
 	" LEVEL", "urgency level (0 - low, 1 - normal, 2 - critical)",
 	NULL, "send notification system-wide (to all session buses)",
 	NULL, "show help message",
